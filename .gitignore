@@ -1,0 +1,37 @@
+# Python-specific
+*.pyc
+*.pyo
+__pycache__/
+*.pyd
+
+# Virtual environment
+venv/
+.venv/
+env/
+.env/
+*.env
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Log and temporary files
+*.log
+*.tmp
+*.bak
+
+# Build and distribution
+build/
+dist/
+
+# IDE files
+.idea/
+
+# Data files
+*.csv
+*.json
+
+# Other
+pip-log.txt
+pip-delete-this-directory.txt
+.pytype/

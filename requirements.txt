@@ -1,0 +1,25 @@
+#This is the list of dependencies for this Python project
+
+allure-pytest==2.14.2
+allure-python-commons==2.14.2
+attrs==25.3.0
+certifi==2025.4.26
+charset-normalizer==3.4.2
+colorama==0.4.6
+greenlet==3.2.2
+idna==3.10
+importlib-metadata==8.6.1
+iniconfig==2.1.0
+packaging==25.0
+pluggy==1.6.0
+pyee==13.0.0
+pytest==8.3.5
+pytest-base-url==2.1.0
+python-slugify==8.0.4
+requests==2.32.3
+selenium==4.33.0
+text-unidecode==1.3
+typing_extensions==4.13.2
+urllib3==2.4.0
+websocket-client==1.8.0
+xlutils==2.0.0
