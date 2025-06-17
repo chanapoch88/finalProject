@@ -36,7 +36,7 @@ def test_currency_3(setup):
     curr3.select_us_currency_type()
     curr3.verify_currency_value_changed("USD")
 
-# To change to specific currency type within Selected for you section and verify that change was made
+# To change currency type within All currencies section according to text and verify that change was made
 @pytest.mark.currency
 # @allure.suite("Currency Suite")
 def test_currency_4(setup):
