@@ -13,6 +13,7 @@ class Currency(Base):
     currency_btn = (By.XPATH, "//button[@data-testid='header-currency-picker-trigger']")
     currency_window_title = (By.XPATH, "//div[@id='header_currency_picker']//h2")
     us_currency_selection_btn = (By.XPATH, "//*[@id='header_currency_picker']//button[.//span[contains(text(), 'Dollar')]]")
+    all_currency_listing = (By.XPATH, "//div[@data-testid='All currencies']//ul[contains(@class, 'f7aa4721a5')]")
     currency_window_close_btn = (By.XPATH, "//button[@data-testid='selection-modal-close']")
     currency_btn_name = (By.XPATH, "//button[@data-testid='header-currency-picker-trigger']/span")
 
@@ -23,8 +24,19 @@ class Currency(Base):
     def check_for_currency_window(self, expected_title):
         self.check_window_state(self.currency_window_title, expected_title)
 
-    def select_currency_type(self):
+    def select_us_currency_type(self):
         self.wait_and_click(self.us_currency_selection_btn)
+
+    def select_currency_type_by_text(self, currency_choice):
+        self.wait_for_element_visibility(self.all_currency_listing)
+        currencies_list = self.driver.find_element(*self.all_currency_listing)
+        all_currencies_list_elements = currencies_list.find_elements(By.TAG_NAME, "li")
+
+        for currency_element in all_currencies_list_elements:
+            if currency_element.text != '' and currency_choice in currency_element.text:
+                currency_element.click()
+                return True
+        raise ValueError(f"The selection '{currency_choice}' was not found")
 
     def close_currency_window(self):
         print(f"Trying to close currency window...")
@@ -42,6 +54,7 @@ class Currency(Base):
                 raise
 
     def verify_currency_value_changed(self, exp_currency):
+        self.wait_for_element_visibility(self.currency_btn_name)
         actual_currency_name = self.driver.find_element(*self.currency_btn_name)
         print(f"The currency after the change is: {actual_currency_name.text}")
         assert actual_currency_name.text == exp_currency, \
