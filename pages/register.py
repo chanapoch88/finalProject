@@ -34,10 +34,8 @@ class Register(Base):
         except TimeoutException:
             self.actual_error_message = None
 
-    def check_changePage(self, pageHeader):
-        actualPage = self.get_element_text(self.signin_up_page_title)
-        print(f"The current page is '{actualPage}'")
-        assert pageHeader == actualPage, f"Page header '{pageHeader}' was expected but instead got '{actualPage}'"
+    def check_changePage(self, expected_register_header):
+        self.verify_page_header(self.signin_up_page_title, expected_register_header)
 
     def verify_error_msg(self, expected_error_msg):
         assert expected_error_msg == self.actual_error_message, f"Error message mismatch. Expected to get: '{expected_error_msg}' but actually got: '{self.actual_error_message}'"

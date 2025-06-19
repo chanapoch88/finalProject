@@ -1,4 +1,5 @@
 import time
+from operator import itemgetter
 
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.webdriver import WebDriver
@@ -13,10 +14,12 @@ class Base:
     def __init__(self, driver):
         self.driver : WebDriver = driver
         self.wait = WebDriverWait(self.driver, 10)
+        self.main_page = driver.current_window_handle
 
     signin_popup_window = (By.XPATH, '//div[@class="bbe73dce14"]/div[contains(@class, "a9f1d9ba2c")]')
     signin_popup_dismiss_btn = (By.XPATH, '//button[@aria-label="Dismiss sign-in info."]')
     main_page_title = (By.XPATH, "//span[@data-testid='herobanner-title1']")
+    main_page_body = (By.TAG_NAME, 'body')
 
     def wait_for_element(self, locator):
         return self.wait.until(EC.presence_of_element_located(locator))
@@ -56,7 +59,7 @@ class Base:
         return element.text
 
     def dismiss_signin_popup(self, timeout=5):
-        print("Trying to dismiss sign-in popup")
+        print("Trying to dismiss sign-in popup...")
         try:
             popup = WebDriverWait(self.driver, timeout).until(
                 EC.presence_of_element_located(self.signin_popup_window))
@@ -73,6 +76,50 @@ class Base:
         except Exception as e:
             print(f"An error occurred while dismissing the popup: {e}")
 
+    # When focus locks onto specific area on page, this releases focus to overall page body
+    def click_to_release_focus(self):
+        self.driver.find_element(*self.main_page_body).click()
+
+    def scroll_to_element(self, locators):
+        self.wait_for_element_visibility(locators)
+        element = self.driver.find_element(*locators)
+        self.driver.execute_script("arguments[0].scrollIntoView();", element)
+
+    def move_to_new_tab(self):
+        print("Attempting to move to new tab window...")
+        all_tabs = self.driver.window_handles
+        for tab in all_tabs:
+            if tab != self.main_page:
+                self.driver.switch_to.window(tab)
+                break
+        time.sleep(2)
+
+    def create_list_of_elements(self, elements):
+        element_list = []
+        for element in elements:
+            element_list.append(element)
+        return element_list
+
+    def print_list_elements(self, elements):
+        for index, element in enumerate(elements):
+            if index < len(elements) - 1:
+                print(f"{element.text}", end=", ")
+            else:
+                print(f"and {element.text}", end="")
+
+    def count_elements(self, element_list, category_name):
+        element_count = len(element_list)
+        print(f"\nThere are a total of {element_count} listings in the section '{category_name}'.")
+
+    def compare_lists_highest_value(self, list1, list2, value_type):
+        # make a combined list from 2 passed lists
+        combined_list = list(zip([l.text for l in list1], [float(l.text) for l in list2]))
+
+        # find the tuple (name, rating_value) in combined list with highest rating using max() and itemgetter()
+        # itemgetter() is operator module function collects items from an iterable object from the index or key
+        highest_value_item = max(combined_list, key = itemgetter(1))
+        print(f"The highest {value_type} is {highest_value_item[1]} and it belongs to '{highest_value_item[0]}'.")
+
     def verify_main_page_open(self, expected_title):
         try:
             assert self.check_window_state(self.main_page_title, expected_title), \
@@ -80,12 +127,22 @@ class Base:
         except AssertionError as e:
             raise AssertionError(f"Cannot find main page title: {e}")
 
-    def verify_page_title(self, locator, expected_title):
-        actual_window_title = self.get_element_text(locator)
-        print(f"The current window is '{actual_window_title}'")
-        assert expected_title == actual_window_title, f"The window title '{expected_title}' was expected but instead got '{actual_window_title}'"
+    def verify_page_header(self, locator, expected_title):
+        actual_window_header = self.get_element_text(locator)
+        print(f"The current window is '{actual_window_header}'")
+        assert expected_title == actual_window_header, f"The window header '{expected_title}' was expected but instead got '{actual_window_header}'"
+
+    def verify_partial_title(self, locator, watchword, partial_expected_header):
+        print(f"watchword: {watchword}, partial expected header: {partial_expected_header}")
+        actual_header = self.get_element_text(locator)
+
+        assert watchword in actual_header and partial_expected_header in actual_header, \
+        f"'Expected to get both {watchword} and {partial_expected_header}' in the header but instead got '{actual_header}'"
+
+        print(f"Test passed! The word '{watchword}' and the partial expected text '{partial_expected_header}' both appear in the actual text '{actual_header}.")
+
 
     def check_window_state(self, locator, expected_title):
         self.wait_for_element_visibility(locator)
-        self.verify_page_title(locator, expected_title)
+        self.verify_page_header(locator, expected_title)
         return True

@@ -82,10 +82,5 @@ class StaysSearch(Base):
         self.wait_and_click(self.search_btn)
 
     def verify_results_title_contains(self, partial_expected_header):
-        try:
-            actual_header = self.get_element_text(self.search_results_page_header)
-            print(f"The current page title is '{actual_header}'")
-            assert self.destination in actual_header and partial_expected_header in actual_header, \
-                f"'Expected to get both {self.destination} and {partial_expected_header}' in the header but instead got '{actual_header}'"
-        except Exception as e:
-            print(f"Got an error during verification of the header: {e}")
+        watchword = self.destination
+        self.verify_partial_title(self.search_results_page_header, watchword, partial_expected_header)
