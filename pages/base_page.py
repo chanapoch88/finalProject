@@ -50,6 +50,7 @@ class Base:
         time.sleep(0.5)
         element.send_keys(text)
 
+    # for selecting only elements within select tags
     def select_option(self, locator, option):
         element = Select(self.driver.find_element(*locator))
         element.select_by_value(str(option))
@@ -116,16 +117,24 @@ class Base:
         combined_list = list(zip([l.text for l in list1], [float(l.text) for l in list2]))
 
         # find the tuple (name, rating_value) in combined list with highest rating using max() and itemgetter()
-        # itemgetter() is operator module function collects items from an iterable object from the index or key
+        # itemgetter() is operator module function that collects items from an iterable object from the index or key
         highest_value_item = max(combined_list, key = itemgetter(1))
         print(f"The highest {value_type} is {highest_value_item[1]} and it belongs to '{highest_value_item[0]}'.")
+
+    def choose_from_elements_by_text(self, elements, text):
+        list_of_elements = self.create_list_of_elements(elements)
+        for element in list_of_elements:
+            if element.text == text:
+                print(f"The chosen category is: {element.text}")
+                return element
+        raise ValueError(f"No element with text {text} was found.")
 
     def verify_main_page_open(self, expected_title):
         try:
             assert self.check_window_state(self.main_page_title, expected_title), \
                 "Expected to get the main page but failed"
         except AssertionError as e:
-            raise AssertionError(f"Cannot find main page title: {e}")
+            raise AssertionError(f"Cannot find page title: {e}")
 
     def verify_page_header(self, locator, expected_title):
         actual_window_header = self.get_element_text(locator)

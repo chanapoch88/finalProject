@@ -55,7 +55,7 @@ class Currency(Base):
 
     def verify_currency_value_changed(self, exp_currency):
         self.wait_for_element_visibility(self.currency_btn_name)
-        actual_currency_name = self.driver.find_element(*self.currency_btn_name)
-        print(f"The currency after the change is: {actual_currency_name.text}")
-        assert actual_currency_name.text == exp_currency, \
-            (f"Test failed. Occupancy details did not change to '{self.currency_btn_name}', got '{actual_currency_name.text}' instead")
+        actual_currency_btn_name = self.driver.find_element(*self.currency_btn_name)
+        print(f"The currency after the change is: {actual_currency_btn_name.text}")
+        assert actual_currency_btn_name.text == exp_currency, \
+            (f"Test failed. Occupancy details did not change to '{self.currency_btn_name}', got '{actual_currency_btn_name.text}' instead")

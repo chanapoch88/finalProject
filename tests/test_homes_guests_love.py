@@ -5,7 +5,7 @@ from pages.homes_guests_love import HomesGuestsLove
 
 # To scroll to 'Homes Guests Love' section, print out the listing names and the total count
 @pytest.mark.homesGuestsLove
-# @allure.suite("Homes Guests Love Suite")
+@allure.suite("Homes Guests Love Suite")
 def test_homes_guests_love_1(setup):
     driver = setup
     driver.get("https://www.booking.com/")
@@ -17,7 +17,7 @@ def test_homes_guests_love_1(setup):
 
 # To find the name & rating of the highest rated listing in 'Homes Guests Love' section
 @pytest.mark.homesGuestsLove
-# @allure.suite("Homes Guests Love Suite")
+@allure.suite("Homes Guests Love Suite")
 def test_homes_guests_love_2(setup):
     driver = setup
     driver.get("https://www.booking.com/")
@@ -28,7 +28,7 @@ def test_homes_guests_love_2(setup):
 
 # To favorite the 1st listing in the 'Homes Guests Love' section
 @pytest.mark.homesGuestsLove
-# @allure.suite("Homes Guests Love Suite")
+@allure.suite("Homes Guests Love Suite")
 def test_homes_guests_love_3(setup):
     driver = setup
     driver.get("https://www.booking.com/")

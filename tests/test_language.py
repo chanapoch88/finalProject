@@ -5,7 +5,7 @@ from pages.language import Language
 
 # To verify that the language window opens after press on language button
 @pytest.mark.language
-# @allure.suite("Language Suite")
+@allure.suite("Language Suite")
 def test_language_1(setup):
     driver = setup
     driver.get("https://www.booking.com/")
@@ -14,8 +14,8 @@ def test_language_1(setup):
     lang1.check_for_language_window("Select your language")
 
 # To verify that the main page reopens after the currency window is closed
-@pytest.mark.currency
-# @allure.suite("Language Suite")
+@pytest.mark.language
+@allure.suite("Language Suite")
 def test_language_2(setup):
     driver = setup
     driver.get("https://www.booking.com/")
@@ -26,8 +26,8 @@ def test_language_2(setup):
     lang2.verify_main_page_open("Find your next stay")
 
 # To change language type within 'Selected for you' section randomly & verify that change was made
-@pytest.mark.currency
-# @allure.suite("Language Suite")
+@pytest.mark.language
+@allure.suite("Language Suite")
 def test_language_3(setup):
     driver = setup
     driver.get("https://www.booking.com/")
@@ -37,8 +37,8 @@ def test_language_3(setup):
     lang3.verify_language_value_changed(lang3.language_choice)
 
 # To change language type within 'All currencies' section according to text & verify change was made
-@pytest.mark.currency
-# @allure.suite("Language Suite")
+@pytest.mark.language
+@allure.suite("Language Suite")
 def test_language_4(setup):
     driver = setup
     driver.get("https://www.booking.com/")

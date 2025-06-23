@@ -5,7 +5,7 @@ from pages.list_property import ListProperty
 
 # To verify that pressing 'List your property' button opens Join listings page
 @pytest.mark.list_property
-# @allure.suite("List Property Suite")
+@allure.suite("List Property Suite")
 def test_list_property_1(setup):
     driver = setup
     driver.get("https://www.booking.com/")

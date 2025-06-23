@@ -27,16 +27,16 @@ class Language(Base):
         self.check_window_state(self.language_window_title, expected_title)
 
     def close_language_window(self):
-        print(f"Trying to close currency window...")
+        print(f"Trying to close language window...")
         try:
             self.wait_and_click(self.modal_window_close_btn)
-            print(f"Successfully closed the currency window")
+            print(f"Successfully closed the language window")
             time.sleep(3)
         except Exception as e:
             print(f"Got an error while closing the language window: {e}")
             try:
                 self.click_element_withJS(self.modal_window_close_btn)
-                print(f"Closed Currency window using click with JS")
+                print(f"Closed language window using click with JS")
             except Exception as JavascriptException:
                 print(f"Got error when trying to perform click with JS: {JavascriptException}")
                 raise
@@ -69,6 +69,6 @@ class Language(Base):
         actual_language_btn = self.driver.find_element(*self.language_btn)
         actual_language_name = actual_language_btn.get_attribute("aria-label")
 
-        print(f"The language button after the change is set to: {actual_language_name}")
+        print(f"After the change, the language button is set to: {actual_language_name}")
         assert exp_language in actual_language_name, \
             (f"Test failed. Occupancy details did not change to '{self.exp_language}', got '{actual_language_name}' instead")
