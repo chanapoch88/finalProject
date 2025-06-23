@@ -13,8 +13,6 @@ class Register(Base):
     signin_up_page_title = (By.XPATH, '//div[@class="page-header"]/h1')
     continue_withEmail_btn = (By.XPATH, '//button[contains(@class,"gIseXOjLVJsp5fEGivrq")]')
     email_alert = (By.ID, 'username-note')
-    verify_email_page_title = (By.XPATH, '//h1[contains(@class, "nw-step-header")]')
-
 
     def click_register_btn(self):
         self.dismiss_signin_popup()

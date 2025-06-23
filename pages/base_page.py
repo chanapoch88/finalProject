@@ -95,6 +95,11 @@ class Base:
                 break
         time.sleep(2)
 
+    def return_to_main_page(self):
+        print("Returning to main page window...")
+        self.driver.close()
+        self.driver.switch_to.window(self.main_page)
+
     def create_list_of_elements(self, elements):
         element_list = []
         for element in elements:
