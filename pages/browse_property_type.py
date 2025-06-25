@@ -47,7 +47,7 @@ class BrowsePropertyType(Base):
 
         for category in all_categories:
             category_name = category.find_element(By.TAG_NAME, "h3").text
-            if category_name == type_name:
+            if category_name == type_name.capitalize():
                 print(f"The chosen category is: {category_name}")
                 category_link = category.find_element(By.TAG_NAME, "a")
                 self.driver.execute_script("arguments[0].scrollIntoView(true);", category_link)

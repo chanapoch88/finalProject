@@ -81,9 +81,12 @@ class Base:
     def click_to_release_focus(self):
         self.driver.find_element(*self.main_page_body).click()
 
-    def scroll_to_element(self, locators):
-        self.wait_for_element_visibility(locators)
-        element = self.driver.find_element(*locators)
+    def scroll_to_element(self, locator):
+        if isinstance(locator, tuple):
+            self.wait_for_element_visibility(locator)
+            element = self.driver.find_element(*locator)
+        else:
+            element = locator
         self.driver.execute_script("arguments[0].scrollIntoView();", element)
 
     def move_to_new_tab(self):
