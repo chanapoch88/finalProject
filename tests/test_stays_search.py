@@ -15,3 +15,17 @@ def test_stays_1(setup):
     s1.choose_end_date()
     s1.click_search_btn()
     s1.verify_results_title_contains("properties found")
+
+# To perform simple stay search using autocompletion for name of destination
+@pytest.mark.staysSearch
+@allure.suite("Stays Search Suite")
+def test_stays_2(setup):
+    driver = setup
+    driver.get("https://www.booking.com/")
+    s2 = StaysSearch(driver)
+    s2.type_partial_destination("Am")
+    s2.choose_random_start_date()
+    s2.choose_random_end_date()
+    s2.click_search_btn()
+    s2.check_for_map_view()
+    s2.verify_results_title_contains("properties found")

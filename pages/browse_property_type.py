@@ -53,7 +53,7 @@ class BrowsePropertyType(Base):
                 self.driver.execute_script("arguments[0].scrollIntoView(true);", category_link)
                 time.sleep(1)
                 try:
-                    self.wait.until(EC.element_to_be_clickable(category_link)).click()
+                    self.wait_and_click(category_link)
                 except Exception as e:
                     print(f"Couldn't click due to {e}, so now trying with JavaScript click...")
                     self.driver.execute_script("arguments[0].click();", category_link)
