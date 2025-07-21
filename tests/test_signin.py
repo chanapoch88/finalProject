@@ -43,7 +43,7 @@ def test_terms_conditions(setup):
     sign4 = Signin(driver)
     sign4.click_signin_btn()
     sign4.click_terms_conditions_link()
-    sign4.verify_terms_conditions_page(sign4.terms_conditions_page_header,"Customer terms of service")
+    sign4.verify_user_agreements_page(sign4.terms_conditions_page_header,"Customer terms of service")
 
 # To verify 'Customer terms of service' page opens when click on 'Terms & Conditions' link
 @pytest.mark.signin
@@ -54,4 +54,4 @@ def test_privacy_statement(setup):
     sign5 = Signin(driver)
     sign5.click_signin_btn()
     sign5.click_privacy_statement_link()
-    sign5.verify_terms_conditions_page(sign5.privacy_statement_page_name, "Privacy & Cookie Statement")
+    sign5.verify_user_agreements_page(sign5.privacy_statement_page_name, "Privacy & Cookie Statement")

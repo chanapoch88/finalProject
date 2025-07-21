@@ -28,7 +28,7 @@ class MainNav(Base):
     car_rental_nav_btn = (By.ID, "cars")
     attractions_nav_btn = (By.ID, "attractions")
     airport_taxis_nav_btn = (By.ID, "airport_taxis")
-    search_flights_page_header = (By.XPATH, "//h2/span")
+    search_flights_page_header = (By.XPATH, "//span[@class='oaFt-title']")
     search_cars_page_header = (By.TAG_NAME, "h1")
     search_attractions_page_header = (By.TAG_NAME, "h1")
     search_taxis_page_header = (By.TAG_NAME, "h1")

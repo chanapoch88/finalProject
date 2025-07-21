@@ -23,7 +23,7 @@ def test_language_2(setup):
     lang2.open_language_window()
     lang2.check_for_language_window("Select your language")
     lang2.close_language_window()
-    lang2.verify_main_page_open("Find your next stay")
+    lang2.verify_main_page_open("A place to call home")
 
 # To change language type within 'Selected for you' section randomly & verify that change was made
 @pytest.mark.language
@@ -41,6 +41,7 @@ def test_language_3(setup):
 @allure.suite("Language Suite")
 def test_language_4(setup):
     driver = setup
+    driver.delete_all_cookies()
     driver.get("https://www.booking.com/")
     lang4 = Language(driver)
     lang4.open_language_window()

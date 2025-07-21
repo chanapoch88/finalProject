@@ -50,7 +50,7 @@ class Signin(Base):
     def click_privacy_statement_link(self):
         self.wait_and_click(self.privacy_statement_link)
 
-    def verify_terms_conditions_page(self, tab_name, expected_tab_header):
+    def verify_user_agreements_page(self, tab_name, expected_tab_header):
         self.move_to_new_tab()
         self.verify_page_header(tab_name, expected_tab_header)
-        self.return_to_main_page()
+

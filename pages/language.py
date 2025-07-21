@@ -71,4 +71,4 @@ class Language(Base):
 
         print(f"After the change, the language button is set to: {actual_language_name}")
         assert exp_language in actual_language_name, \
-            (f"Test failed. Occupancy details did not change to '{self.exp_language}', got '{actual_language_name}' instead")
+            (f"Test failed. Language details did not change to '{self.exp_language}', got '{actual_language_name}' instead")
