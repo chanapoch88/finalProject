@@ -3,7 +3,6 @@ import random
 import re
 
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
 from selenium.common import NoSuchElementException, TimeoutException
 
 from pages.base_page import Base
@@ -33,7 +32,6 @@ class StaysSearch(Base):
     occupancy_summary = (By.XPATH, "//button[@data-testid='occupancy-config']/span[contains(@class, 'be2db1c937')]")
     occupancy_done_btn = (By.XPATH, "//div[@data-testid='occupancy-popup']/button[contains(@class, 'bbf83acb81')]")
     search_btn = (By.CSS_SELECTOR, "button[type='submit']")
-    search_results_page_header = (By.TAG_NAME, "h1")
     open_map_search_field = (By.XPATH, "//input[@aria-label='Search on map']")
     map_view_close_btn = (By.XPATH, "//button[@aria-label='Close map']")
     search_results_page_header = (By.TAG_NAME, "h1")
@@ -47,7 +45,6 @@ class StaysSearch(Base):
             self.type(self.destination_field, destination)
             self.destination = destination
             return self.destination
-            time.sleep(3)
 
     def type_partial_destination(self, part_destination):
         time.sleep(2)
@@ -196,6 +193,36 @@ class StaysSearch(Base):
         if occupant_details:
             self.initial_occupancy_text = occupant_details[0].text
             print(f"The default occupancy is set to: {self.initial_occupancy_text}")
+
+    def change_occupants(self):
+        num_children = 1
+        ages = [2]
+
+        self.wait_and_click(self.occupants_field)
+
+        for i in range(num_children):
+            self.wait_and_click(self.child_increase_btn)
+            self.click_element(self.age_field)
+            self.wait_and_click(self.age_options)
+            self.select_option(self.age_options, ages[i])
+
+            self.click_element(self.occupancy_done_btn)
+
+            occupant_details = self.driver.find_elements(*self.occupancy_summary)
+            if occupant_details:
+                self.new_occupant_text = occupant_details[0].text
+                print(f"The occupancy was set to: {self.new_occupant_text}")
+
+            return self.new_occupant_text
+
+    def verify_occupancy_change(self):
+        print(f"Comparing the new occupancy details to the default settings...")
+        assert self.new_occupant_text != self.initial_occupancy_text, \
+            (f"Test failed. The occupancy details did not change as expected. "
+             f"Default details: {self.initial_occupancy_text}, new occupancy details: {self.new_occupant_text}")
+
+        print(f"Test passed! Occupancy details changed from the default '{self.initial_occupancy_text}' to "
+              f"the new '{self.new_occupant_text}'.")
 
     def click_search_btn(self):
         self.wait_and_click(self.search_btn)

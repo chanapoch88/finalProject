@@ -80,6 +80,7 @@ class Base:
     # When focus locks onto specific area on page, this releases focus to overall page body
     def click_to_release_focus(self):
         self.driver.find_element(*self.main_page_body).click()
+        time.sleep(1)
 
     def scroll_to_element(self, locator):
         if isinstance(locator, tuple):
@@ -90,6 +91,12 @@ class Base:
         self.driver.execute_script("arguments[0].scrollIntoView();", element)
 
     def move_to_new_tab(self):
+        print("Checking current number of tab windows...")
+        current_tabs = self.driver.window_handles
+        if len(current_tabs) > 1:
+            self.driver.switch_to.window(self.main_page)
+            self.driver.close()
+
         print("Attempting to move to new tab window...")
         all_tabs = self.driver.window_handles
         for tab in all_tabs:
@@ -107,6 +114,13 @@ class Base:
         element_list = []
         for element in elements:
             element_list.append(element)
+        return element_list
+
+    def create_limited_list_of_elements(self, elements, limit):
+        element_list = []
+        for element in elements:
+            if len(element_list) < limit:
+                element_list.append(element)
         return element_list
 
     def print_list_elements(self, elements):
@@ -158,8 +172,20 @@ class Base:
 
         print(f"Test passed! The word '{watchword}' and the partial expected text '{partial_expected_header}' both appear in the actual text '{actual_header}.")
 
-
     def check_window_state(self, locator, expected_title):
         self.wait_for_element_visibility(locator)
         self.verify_page_header(locator, expected_title)
         return True
+
+    # Created to resolve an issue with category types sometimes changing for different runs, probably due to geolocation dependence
+    def test_category_with_fallback(self, items_list: list[dict]):
+        for item in items_list:
+            try:
+                self.choose_trip_plan_category(item["category"])
+                self.choose_trip_destination(item["destination"])
+                return
+            except ValueError as e:
+                print(f"Test failed with '{item["category"]}/{item["destination"]}' due to '{e}'")
+                continue
+        raise AssertionError("No valid category/destination combination was found")
+

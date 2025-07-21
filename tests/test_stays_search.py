@@ -29,3 +29,17 @@ def test_stays_2(setup):
     s2.click_search_btn()
     s2.check_for_map_view()
     s2.verify_results_title_contains("properties found")
+
+# To verify change made in occupancy
+@pytest.mark.staysSearch
+@allure.suite("Stays Search Suite")
+def test_stays_3(setup):
+    driver = setup
+    driver.get("https://www.booking.com/")
+    s3 = StaysSearch(driver)
+    s3.type_destination("Atlanta")
+    s3.choose_start_date()
+    s3.choose_end_date()
+    s3.check_occupancy()
+    s3.change_occupants()
+    s3.verify_occupancy_change()
