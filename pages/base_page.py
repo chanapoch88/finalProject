@@ -6,7 +6,8 @@ from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
-from selenium.common.exceptions import TimeoutException, NoSuchElementException
+from selenium.common.exceptions import TimeoutException, NoSuchElementException, StaleElementReferenceException, \
+    ElementNotInteractableException
 from selenium.webdriver.support.ui import Select
 
 
@@ -42,11 +43,30 @@ class Base:
     def clear(self, locators):
         self.driver.find_element(*locators).clear()
 
+    def check_for_text_and_clear(self, element):
+        try:
+            print("Checking if text field is empty...")
+            text_in_field = element.get_attribute("value").strip()
+            if text_in_field == "":
+                print("Text field has no text so will skip clearing action")
+                return
+
+            print("Trying to clear text simply...")
+            element.clear()
+
+            print("Checking if field has been emptied of text...")
+            if element.get_attribute("value").strip() != "":
+                print("Field still has text. Deleting now with special keys..")
+                element.send_keys(Keys.CONTROL + "a")
+                element.send_keys(Keys.DELETE)
+        except (TimeoutException, StaleElementReferenceException, ElementNotInteractableException) as e:
+            print(f"Could not clear text field for {element} due to '{e}'")
+            raise
+
     def type(self, locators, text):
         element = self.driver.find_element(*locators)
         element.click()
-        element.send_keys(Keys.CONTROL + "a")
-        element.send_keys(Keys.DELETE)
+        self.check_for_text_and_clear(element)
         time.sleep(0.5)
         element.send_keys(text)
 
