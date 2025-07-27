@@ -1,0 +1,22 @@
+[project]
+name = "finalProject"
+version = "1.0.0"
+description = "Final project for HackerU's Automation Developer Course for Software Testers. This project features web automation tests in Python using Selenium, Pytest, and Allure on Booking.com's website."
+authors = [
+    { name = "Chana POch", email = "chanapoch88@gmail.com" }
+]
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+
+dependencies = [
+    "selenium>=4.34.2",
+    "pytest>=8.4.1",
+    "pytest-base-url>=2.1.0",
+    "allure-pytest>=2.15.0",
+    "requests>=2.32.4"
+]
+
+[tool.pytest.ini_options]
+addopts = "-v"
+testpaths = ["tests"]
