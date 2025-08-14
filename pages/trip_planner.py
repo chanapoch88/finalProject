@@ -217,7 +217,7 @@ class TripPlanner(Base):
         return False, tries, actual_sort_type_name
 
     def collect_limited_property_results_details(self, limit):
-        print(f"Collecting the first 10 properties listed and their ratings...")
+        print(f"Collecting the first number of properties listed according to the limit and their ratings...")
 
         all_property_results_names = self.driver.find_elements(*self.all_trip_planner_results_names)
         first10_property_results_name_list = self.create_limited_list_of_elements(all_property_results_names, limit)
