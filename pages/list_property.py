@@ -20,5 +20,8 @@ class ListProperty(Base):
         self.wait_and_click(self.list_property_btn)
         self.release_register_focus()
 
-    def verify_join_listings_page(self, watchword, partial_expected_text):
-        self.verify_title_contains(self.join_other_listings, watchword, partial_expected_text)
+    def get_join_listings_page_header(self):
+        print("Trying to get page header after opening list property window...")
+        actual_header = self.get_element_text(self.join_other_listings)
+        print(f"The actual page header is '{actual_header}'.")
+        return actual_header

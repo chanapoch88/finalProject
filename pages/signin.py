@@ -27,22 +27,26 @@ class Signin(Base):
 
     # fills in signin/signup form
     def signin_signup(self, user_email):
-        self.actual_error_message = None
         self.type(self.emailField, user_email)
-        self.wait_and_click(
-            self.continue_withEmail_btn)
+        self.wait_and_click(self.continue_withEmail_btn)
+
+    def get_signup_email_error_text(self):
         try:
             error_message_text = self.get_element_text(self.email_alert)
-            self.actual_error_message = error_message_text
-            print(f"The error received is '{self.actual_error_message}'")
+            print(f"The error received is '{error_message_text}'")
+            # self.actual_error_message = error_message_text
+            # print(f"The error received is '{self.actual_error_message}'")
+            return error_message_text
         except TimeoutException:
-            self.actual_error_message = None
+            # self.actual_error_message = None
+            return None
 
-    def check_changePage(self, expected_signin_header):
-        self.verify_page_header(self.signin_up_page_title, expected_signin_header)
+    def get_signin_page_header_text(self):
+        return super().get_page_header_text(self.signin_up_page_title)
 
-    def verify_error_msg(self, expected_error_msg):
-        assert expected_error_msg == self.actual_error_message, f"Incorrect error message! Expected to get: '{expected_error_msg}' but actually got: '{self.actual_error_message}'"
+    def get_signin_error_msg_text(self):
+        actual_error_message = self.actual_error_message
+        return actual_error_message
 
     def click_terms_conditions_link(self):
         self.wait_and_click(self.terms_conditions_link)
@@ -50,7 +54,11 @@ class Signin(Base):
     def click_privacy_statement_link(self):
         self.wait_and_click(self.privacy_statement_link)
 
-    def verify_user_agreements_page(self, tab_name, expected_tab_header):
+    def get_service_terms_page_header_text(self):
         self.move_to_new_tab()
-        self.verify_page_header(tab_name, expected_tab_header)
+        return super().get_page_header_text(self.terms_conditions_page_header)
+
+    def get_privacy_statement_page_header_text(self):
+        self.move_to_new_tab()
+        return super().get_page_header_text(self.privacy_statement_page_name)
 

@@ -6,8 +6,8 @@ from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
-from selenium.common.exceptions import TimeoutException, NoSuchElementException, StaleElementReferenceException, \
-    ElementNotInteractableException
+from selenium.common.exceptions import TimeoutException, NoSuchElementException
+from selenium.common import StaleElementReferenceException, ElementNotInteractableException
 from selenium.webdriver.support.ui import Select
 
 
@@ -153,6 +153,7 @@ class Base:
     def count_elements(self, element_list, category_name):
         element_count = len(element_list)
         print(f"\nThere are a total of {element_count} listings in the section '{category_name}'.")
+        return element_count
 
     def compare_lists_highest_value(self, list1, list2, value_type):
         # make a combined list from 2 passed lists
@@ -161,7 +162,10 @@ class Base:
         # find the tuple (name, rating_value) in combined list with highest rating using max() and itemgetter()
         # itemgetter() is operator module function that collects items from an iterable object from the index or key
         highest_value_item = max(combined_list, key = itemgetter(1))
+        highest_value_list1 = highest_value_item[0]
+        highest_value_list2 = highest_value_item[1]
         print(f"The highest {value_type} is {highest_value_item[1]} and it belongs to '{highest_value_item[0]}'.")
+        return highest_value_list1, highest_value_list2
 
     def choose_from_elements_by_text(self, elements, text):
         list_of_elements = self.create_list_of_elements(elements)
@@ -171,31 +175,15 @@ class Base:
                 return element
         raise ValueError(f"No element with text {text} was found.")
 
-    def verify_main_page_open(self, expected_title):
-        try:
-            assert self.check_window_state(self.main_page_title, expected_title), \
-                "Expected to get the main page but failed"
-        except AssertionError as e:
-            raise AssertionError(f"Cannot find page title: {e}")
+    def get_main_page_title(self):
+        self.wait_for_element_visibility(self.main_page_title)
+        actual_main_page_header = self.get_page_header_text(self.main_page_title)
+        return actual_main_page_header
 
-    def verify_page_header(self, locator, expected_title):
-        actual_window_header = self.get_element_text(locator)
-        print(f"The current window is '{actual_window_header}'")
-        assert expected_title == actual_window_header, f"The window header '{expected_title}' was expected but instead got '{actual_window_header}'"
-
-    def verify_partial_title(self, locator, watchword, partial_expected_header):
-        print(f"watchword: {watchword}, partial expected header: {partial_expected_header}")
-        actual_header = self.get_element_text(locator)
-
-        assert watchword in actual_header and partial_expected_header in actual_header, \
-        f"'Expected to get both {watchword} and {partial_expected_header}' in the header but instead got '{actual_header}'"
-
-        print(f"Test passed! The word '{watchword}' and the partial expected text '{partial_expected_header}' both appear in the actual text '{actual_header}.")
-
-    def check_window_state(self, locator, expected_title):
-        self.wait_for_element_visibility(locator)
-        self.verify_page_header(locator, expected_title)
-        return True
+    def get_page_header_text(self, locator):
+        actual_page_header = self.get_element_text(locator)
+        print(f"The current window is '{actual_page_header}'")
+        return actual_page_header
 
     # Created to resolve an issue with category types sometimes changing for different runs, probably due to geolocation dependence
     def test_category_with_fallback(self, items_list: list[dict]):

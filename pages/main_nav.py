@@ -35,17 +35,20 @@ class MainNav(Base):
 
 
     def choose_nav_btn(self, nav_name):
+        print("Trying to match the entered title to its navigation button...")
         if nav_name.capitalize() not in self.nav_name_to_btn_locator:
             raise ValueError(f"'{nav_name}' navigation button is not defined.")
         return self.nav_name_to_btn_locator[nav_name.capitalize()]
 
     def open_navigated_to_window(self, nav_name):
+        print("Clicking on the nav button...")
         self.dismiss_signin_popup()
         chosen_nav_locator = self.choose_nav_btn(nav_name)
         self.wait_and_click(chosen_nav_locator)
         return chosen_nav_locator
 
-    def verify_opened_correct_page(self, nav_name, expected_title):
+    def get_opened_nav_page_header_from_nav_name(self, nav_name):
         header_locator = self.nav_name_to_header_locator[nav_name]
-        self.wait.until(EC.text_to_be_present_in_element(header_locator, expected_title))
-        self.verify_page_header(header_locator, expected_title)
+        self.wait_for_element_visibility(header_locator)
+        nav_page_header = self.get_page_header_text(header_locator)
+        return nav_page_header

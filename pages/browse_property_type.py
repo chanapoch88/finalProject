@@ -39,7 +39,8 @@ class BrowsePropertyType(Base):
 
     def count_browse_by_property_type(self):
         category_names = self.driver.find_elements(*self.browse_by_property_type_categories)
-        self.count_elements(category_names, self.category_name)
+        property_type_count = self.count_elements(category_names, self.category_name)
+        return property_type_count
 
     def choose_category(self, type_name):
         self.wait.until(EC.presence_of_all_elements_located(self.browse_by_property_type_categories))
@@ -83,22 +84,33 @@ class BrowsePropertyType(Base):
         except Exception as e:
             print(f"An error occurred while dismissing the popup: {e}")
 
-    def verify_results_title_contains(self, partial_expected_header):
-        watchword = self.chosen_category_name.lower()
-        self.verify_partial_title(self.category_page_subhead, watchword, partial_expected_header)
+    def get_category_page_title_and_watchword(self):
+        c_watchword = self.chosen_category_name.lower()
+        c_actual_header = self.get_element_text(self.category_page_subhead)
+        print(f"watchword: {c_watchword}, actual_header: {c_actual_header}")
+        return c_watchword, c_actual_header
+
+    def get_hotels_page_title_and_watchword(self):
+        h_watchword = "hotels"
+        h_actual_header = self.get_element_text(self.hotels_subhead_title)
+        print(f"watchword: {h_watchword}, actual_header: {h_actual_header}")
+        return h_watchword, h_actual_header
 
     def get_details_of_1st_most_booked_listing(self, type_name):
         if type_name == "Hotels":
             time.sleep(1)
             self.close_signin_banner()
             self.wait.until(EC.presence_of_element_located(self.hotels_subhead_title))
-            watchword = type_name.lower()
-            partial_expected_header = "to luxury rooms and everything in between"
-            self.verify_partial_title(self.hotels_subhead_title, watchword, partial_expected_header)
             print(f"The 'Hotels' category has no 'Most booked' section on its page so the test for 'Most booked' is skipped.")
-            return
 
-        self.check_window_state(self.category_page_header, type_name)
+            return {
+                'category': type_name,
+                'has_most_booked': False,
+                'title_details': self.get_hotels_page_title_and_watchword()
+            }
+
+        self.wait_for_element_visibility(self.category_page_header)
+        actual_page_header = self.get_page_header_text(self.category_page_header)
         self.scroll_to_most_booked_section()
         self.wait.until(EC.presence_of_all_elements_located(self.first_most_booked))
 
@@ -108,3 +120,12 @@ class BrowsePropertyType(Base):
         first_most_booked_rating = first_most_booked.find_element(By.XPATH, ".//div[@class='bui-card__text']//span[@class='review-score-badge']").text
 
         print(f"The 1st listing for 'Most booked {self.chosen_category_name}' is {first_most_booked_name}, located in '{first_most_booked_place}', with a rating of {first_most_booked_rating}.")
+
+        return {
+            'category': type_name,
+            'has_most_booked': True,
+            'actual_page_header': actual_page_header,
+            'most_booked_name': first_most_booked_name,
+            'most_booked_place': first_most_booked_place,
+            'most_booked_rating': first_most_booked_rating
+        }

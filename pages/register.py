@@ -22,18 +22,17 @@ class Register(Base):
 
     # function to fill signin/signup form
     def signin_signup(self, user_email):
-        self.actual_error_message = None
         self.type(self.emailField, user_email)
         self.wait_and_click(self.continue_withEmail_btn)
+
+    def get_register_email_error_text(self):
         try:
             error_message_text = self.get_element_text(self.email_alert)
-            self.actual_error_message = error_message_text
-            print(f"The error received is '{self.actual_error_message}'")
+            print(f"The error received is '{error_message_text}'")
+            return error_message_text
+
         except TimeoutException:
-            self.actual_error_message = None
+            return None
 
-    def check_changePage(self, expected_register_header):
-        self.verify_page_header(self.signin_up_page_title, expected_register_header)
-
-    def verify_error_msg(self, expected_error_msg):
-        assert expected_error_msg == self.actual_error_message, f"Error message mismatch. Expected to get: '{expected_error_msg}' but actually got: '{self.actual_error_message}'"
+    def get_register_page_header_text(self):
+        return super().get_page_header_text(self.signin_up_page_title)

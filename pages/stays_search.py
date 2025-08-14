@@ -177,7 +177,7 @@ class StaysSearch(Base):
         for re_date in ending_dates:
             if re_date.get_attribute("aria-hidden") != 'true' and re_date.get_attribute("aria-disabled") != 'true':
                 possible_end_dates.append(re_date)
-                possible_end_date_texts.append(re_date.text) # is this needed?
+                possible_end_date_texts.append(re_date.text)
 
         random_end_index = random.randint(0, len(possible_end_dates) - 1)
         randomly_picked_end_date = possible_end_dates[random_end_index]
@@ -215,15 +215,6 @@ class StaysSearch(Base):
 
             return self.new_occupant_text
 
-    def verify_occupancy_change(self):
-        print(f"Comparing the new occupancy details to the default settings...")
-        assert self.new_occupant_text != self.initial_occupancy_text, \
-            (f"Test failed. The occupancy details did not change as expected. "
-             f"Default details: {self.initial_occupancy_text}, new occupancy details: {self.new_occupant_text}")
-
-        print(f"Test passed! Occupancy details changed from the default '{self.initial_occupancy_text}' to "
-              f"the new '{self.new_occupant_text}'.")
-
     def click_search_btn(self):
         self.wait_and_click(self.search_btn)
 
@@ -244,6 +235,8 @@ class StaysSearch(Base):
         except Exception as e:
             print(f"While closing the map view, an error occurred: {e}")
 
-    def verify_results_title_contains(self, partial_expected_header):
+    def get_results_title_and_watchword(self):
         watchword = self.destination
-        self.verify_partial_title(self.search_results_page_header, watchword, partial_expected_header)
+        actual_header = self.get_element_text(self.search_results_page_header)
+        print(f"watchword: {watchword}, actual_header: {actual_header}")
+        return watchword, actual_header

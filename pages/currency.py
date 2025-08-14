@@ -21,8 +21,11 @@ class Currency(Base):
         self.dismiss_signin_popup()
         self.wait_and_click(self.currency_btn)
 
-    def check_for_currency_window(self, expected_title):
-        self.check_window_state(self.currency_window_title, expected_title)
+    def get_currency_window_title(self):
+        self.wait_for_element_visibility(self.currency_window_title)
+        actual_currency_window_header = self.get_element_text(self.currency_window_title)
+        print(f"The current window is '{actual_currency_window_header}'")
+        return actual_currency_window_header
 
     def select_us_currency_type(self):
         self.wait_and_click(self.us_currency_selection_btn)
@@ -53,9 +56,9 @@ class Currency(Base):
                 print(f"Got error when trying to perform click with JS: {JavascriptException}")
                 raise
 
-    def verify_currency_value_changed(self, exp_currency):
+    def get_new_currency_value(self):
         self.wait_for_element_visibility(self.currency_btn_name)
         actual_currency_btn_name = self.driver.find_element(*self.currency_btn_name)
-        print(f"The currency after the change is: {actual_currency_btn_name.text}")
-        assert actual_currency_btn_name.text == exp_currency, \
-            (f"Test failed. Occupancy details did not change to '{self.currency_btn_name}', got '{actual_currency_btn_name.text}' instead")
+        actual_currency_btn_name_text = actual_currency_btn_name.text
+        print(f"The currency button after the change is set to: {actual_currency_btn_name_text}")
+        return actual_currency_btn_name_text

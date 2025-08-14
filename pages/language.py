@@ -21,10 +21,14 @@ class Language(Base):
 
     def open_language_window(self):
         self.dismiss_signin_popup()
+        print(f"Trying to click on language button...")
         self.wait_and_click(self.language_btn)
 
-    def check_for_language_window(self, expected_title):
-        self.check_window_state(self.language_window_title, expected_title)
+    def get_language_window_title(self):
+        print(f"Looking for language window title...")
+        self.wait_for_element_visibility(self.language_window_title)
+        actual_language_page_title = self.get_page_header_text(self.language_window_title)
+        return actual_language_page_title
 
     def close_language_window(self):
         print(f"Trying to close language window...")
@@ -42,6 +46,7 @@ class Language(Base):
                 raise
 
     def select_language_by_random(self):
+        print("Randomly choosing a language...")
         self.wait_for_element_visibility(self.selected_language_list)
         selected_language_list = self.driver.find_element(*self.selected_language_list)
         selected_language_list_elements = selected_language_list.find_elements(By.TAG_NAME, "li")
@@ -51,9 +56,11 @@ class Language(Base):
         random_language_name = randomly_picked_lang.text
         print(f"The randomly chosen language is: '{random_language_name}'")
         randomly_picked_lang.click()
-        self.language_choice = random_language_name
+        language_choice = random_language_name
+        return language_choice
 
     def select_lang_type_by_text(self, language_choice):
+        print("Trying to select a language according to text input...")
         self.wait_for_element_visibility(self.all_language_list)
         language_list = self.driver.find_element(*self.all_language_list)
         all_language_list_elements = language_list.find_elements(By.TAG_NAME, "li")
@@ -64,11 +71,9 @@ class Language(Base):
                 return True
         raise ValueError(f"The selection '{language_choice}' was not found")
 
-    def verify_language_value_changed(self, exp_language):
+    def get_new_language_btn_value(self):
         self.wait_for_element_visibility(self.language_btn)
         actual_language_btn = self.driver.find_element(*self.language_btn)
         actual_language_name = actual_language_btn.get_attribute("aria-label")
-
         print(f"After the change, the language button is set to: {actual_language_name}")
-        assert exp_language in actual_language_name, \
-            (f"Test failed. Language details did not change to '{self.exp_language}', got '{actual_language_name}' instead")
+        return actual_language_name

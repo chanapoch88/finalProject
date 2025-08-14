@@ -30,7 +30,6 @@ class TrendingDestinations(Base):
         second_row_destinations_names_text = [el2.text for el2 in second_row_destinations_names]
 
         all_trending_destinations_list.extend(second_row_destinations_names_text)
-        print(all_trending_destinations_list)
 
         print("The top trending destinations are:")
         for i, d in enumerate(all_trending_destinations_list):
@@ -38,3 +37,5 @@ class TrendingDestinations(Base):
                 print(d, end=", ")
             else:
                 print(f"and {d}", end="")
+
+        return all_trending_destinations_list

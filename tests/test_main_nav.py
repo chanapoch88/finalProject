@@ -6,30 +6,38 @@ from pages.main_nav import MainNav
 # To verify flight page opens when press Flights main nav button
 @pytest.mark.mainNav
 @allure.suite("Main Nav Suite")
-def test_main_nav1_flights(setup):
+def test_flights_main_nav_btn_opens_window_1(setup):
     driver = setup
     driver.get("https://www.booking.com/")
     nav1 = MainNav(driver)
     nav1.open_navigated_to_window("Flights")
-    nav1.verify_opened_correct_page("Flights", "Search hundreds of flight sites at once.")
+    expected_flights_nav_header = "Search hundreds of flight sites at once."
+    actual_nav_header = nav1.get_opened_nav_page_header_from_nav_name("Flights")
+    assert actual_nav_header == expected_flights_nav_header, f"The window header '{expected_flights_nav_header}' was expected but instead got '{actual_nav_header}'"
 
-def test_main_nav2_cars(setup):
+def test_cars_main_nav_btn_opens_window_2(setup):
     driver = setup
     driver.get("https://www.booking.com/")
-    nav1 = MainNav(driver)
-    nav1.open_navigated_to_window("Car rentals")
-    nav1.verify_opened_correct_page("Car rentals","Car rentals for any kind of trip")
+    nav2 = MainNav(driver)
+    nav2.open_navigated_to_window("Car rentals")
+    expected_cars_nav_header = "Car rentals for any kind of trip"
+    actual_nav_header = nav2.get_opened_nav_page_header_from_nav_name("Car rentals")
+    assert actual_nav_header == expected_cars_nav_header, f"The window header '{expected_cars_nav_header}' was expected but instead got '{actual_nav_header}'"
 
-def test_main_nav3_attractions(setup):
+def test_attractions_main_nav_btn_opens_window_3(setup):
     driver = setup
     driver.get("https://www.booking.com/")
-    nav1 = MainNav(driver)
-    nav1.open_navigated_to_window("Attractions")
-    nav1.verify_opened_correct_page("Attractions","Attractions, activities, and experiences")
+    nav3 = MainNav(driver)
+    nav3.open_navigated_to_window("Attractions")
+    expected_attractions_nav_header = "Attractions, activities, and experiences"
+    actual_nav_header = nav3.get_opened_nav_page_header_from_nav_name("Attractions")
+    assert actual_nav_header == expected_attractions_nav_header, f"The window header '{expected_attractions_nav_header}' was expected but instead got '{actual_nav_header}'"
 
-def test_main_nav4_taxis(setup):
+def test_taxis_main_nav_btn_opens_window_4(setup):
     driver = setup
     driver.get("https://www.booking.com/")
-    nav1 = MainNav(driver)
-    nav1.open_navigated_to_window("Airport taxis")
-    nav1.verify_opened_correct_page("Airport taxis","Find the right ride for your trip")
+    nav4 = MainNav(driver)
+    nav4.open_navigated_to_window("Airport taxis")
+    expected_taxis_nav_header = "Find the right ride for your trip"
+    actual_nav_header = nav4.get_opened_nav_page_header_from_nav_name("Airport taxis")
+    assert actual_nav_header == expected_taxis_nav_header, f"The window header '{expected_taxis_nav_header}' was expected but instead got '{actual_nav_header}'"

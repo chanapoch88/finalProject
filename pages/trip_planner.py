@@ -30,6 +30,7 @@ class TripPlanner(Base):
     trip_planner_sort_type = (By.XPATH, "//button[@data-testid='sorters-dropdown-trigger']//span[contains(text(), 'Sort by')]")
     trip_planner_sort_choice_list = (By.XPATH, "//div[@data-testid='sorters-dropdown']/ul")
     trip_planner_sort_choice_list_elements = (By.XPATH, "//div[@data-testid='sorters-dropdown']/ul/li")
+    all_trip_planner_results_property_tiles = (By.XPATH, "//div[@data-testid='property-card']")
     all_trip_planner_results_names = (By.XPATH, "//div[@data-testid='property-card']//a[@data-testid='title-link']/div[@data-testid='title']")
     all_trip_planner_results_ratings = (By.XPATH, "//div[@data-testid='property-card']//div[@data-testid='review-score']/div[@class='bc946a29db']")
     review_score_filter_section = (By.XPATH, "//div[@data-filters-group='review_score']")
@@ -38,8 +39,12 @@ class TripPlanner(Base):
     highest_review_score_filter_button = (By.XPATH, "//button[@data-testid='filter:review_score=90']")
 
     def scroll_to_trip_planner(self):
-        self.scroll_to_element(self.trip_planner_section_title)
-        self.wait_for_element_visibility(self.trip_planner_section_title)
+        print("Scrolling to Trip Planner section...")
+        try:
+            self.scroll_to_element(self.trip_planner_section_title)
+            self.wait_for_element_visibility(self.trip_planner_section_title)
+        except TimeoutException:
+            raise AssertionError("Trip Planner section has not displayed")
 
     def choose_trip_plan_category(self, trip_category):
         self.wait.until(EC.presence_of_all_elements_located(self.trip_planner_category_buttons))
@@ -53,7 +58,7 @@ class TripPlanner(Base):
 
             if category_name_text == trip_category.title():
                 print(f"The chosen trip category is: {category_name_text}")
-                category_link = category.find_element(By.XPATH,f".//button[.//span[contains(text(), '{category_name_text}')]]")
+                category_link = category.find_element(By.XPATH, f".//button[.//span[contains(text(), '{category_name_text}')]]")
                 time.sleep(1)
                 try:
                     self.wait_and_click(category_link)
@@ -61,7 +66,7 @@ class TripPlanner(Base):
                     print(f"Couldn't click due to {e}, so now trying JavaScript click...")
                     self.driver.execute_script("arguments[0].click();", category_link)
 
-                self.chosen_category_name = category_name.capitalize()
+                self.chosen_category_name = category_name_text.title()
                 return
         raise ValueError(f"Could not find the destination '{trip_category}'")
 
@@ -109,19 +114,33 @@ class TripPlanner(Base):
         self.move_to_new_tab()
         self.click_to_release_focus()
 
-    def verify_results_title_contains(self, partial_expected_header):
+    def get_results_title_and_watchword(self):
         watchword = self.chosen_destination_name
         self.move_to_new_tab_and_free_focus()
-        self.verify_partial_title(self.trip_planner_destination_page_header, watchword, partial_expected_header)
+        actual_page_header = self.get_element_text(self.trip_planner_destination_page_header)
+        print(f"watchword: {watchword}, actual_header: {actual_page_header}")
+        return watchword, actual_page_header
 
-    def printout_num_properties_found(self):
+    def get_num_properties_at_location(self):
         self.move_to_new_tab_and_free_focus()
 
         page_header = self.get_element_text(self.trip_planner_destination_page_header)
         property_location = re.split(r'[:(,\-]', page_header)[0].strip()
         header_text_elements = re.split(r'[:]', page_header, maxsplit=1)[1].strip().split()
         num_properties = header_text_elements[0]
-        print(f"The number of properties at '{property_location}' found is: {num_properties}")
+        print(
+            f"The number of properties displayed in the results page header for '{property_location}' is {num_properties}")
+        return property_location, num_properties
+
+    def get_num_listings_on_results_page(self, destination):
+        location_locator = (By.XPATH,
+                            f"//div[@data-testid='property-card'][.//span[contains(@data-testid, 'address') and contains(text(), '{destination}')]]"
+                            )
+        self.wait.until(EC.presence_of_all_elements_located(location_locator))
+        location_related_property_tiles = self.driver.find_elements(*location_locator)
+        num_results_listed = len(location_related_property_tiles)
+        print(f"The number of property tiles labelled as within '{destination}' is {num_results_listed}")
+        return num_results_listed
 
     def determine_property_sort_type(self, locator):
         sort_type_element = self.driver.find_element(*locator)
@@ -136,7 +155,7 @@ class TripPlanner(Base):
             if calendar_picker_open.is_displayed():
                 print(f"The calendar picker is open. Trying to close it...")
                 self.scroll_to_element(self.searchbox_whole_element)
-                self.click_element(self.calendar_date_searchbox)  # maybe good idea to generalize the click_to_release_focus fx in base_page
+                self.click_element(self.calendar_date_searchbox)
                 time.sleep(2)
                 try:
                     self.wait.until(EC.invisibility_of_element_located(self.calendar_date_picker_open))
@@ -190,13 +209,12 @@ class TripPlanner(Base):
 
             if partial_expected_type in actual_sort_type_name:
                 print(f"The property sorting type was found to be successfully changed to '{partial_expected_type}' in check {t + 1}")
-                return
+                return True, actual_sort_type_name
             else:
                 print(f"Check #{t + 1}: the sort type is still '{actual_sort_type_name}'. Waiting to recheck update in sort type...")
                 time.sleep(1)
 
-        raise AssertionError(f"The sort type did not update to match {partial_expected_type}. " 
-                            f"After checking {tries} times, the sort type is: {actual_sort_type_name}")
+        return False, tries, actual_sort_type_name
 
     def collect_limited_property_results_details(self, limit):
         print(f"Collecting the first 10 properties listed and their ratings...")
@@ -230,14 +248,15 @@ class TripPlanner(Base):
         self.wait_for_element_visibility(self.review_score_filter_9plus_checkbox)
         self.click_element(self.review_score_filter_9plus_checkbox)
 
-    def verify_highest_score_filter_btn_appears(self):
+    def does_highest_score_filter_btn_appear(self):
         print("Checking that the highest review score filter button is displayed...")
 
         highest_review_score_btn_appearance = self.wait_for_element_visibility(self.highest_review_score_filter_button)
         if highest_review_score_btn_appearance.is_displayed():
             print(f"The highest review score filter button appears was found.")
+            return True
         else:
-            raise AssertionError("Could not find the highest review score filter button displayed within the set time")
+            return False
 
     def collect_all_filter_property_results_scores(self):
         print(f"Collecting all filtered properties listed and their scores...")
@@ -259,7 +278,7 @@ class TripPlanner(Base):
 
         return combined_property_score_list
 
-    def verify_all_listed_ratings_over_9(self):
+    def get_all_listed_ratings_under_9(self):
         print(f"Verifying that all the resulting filtered properties have a score of 9 or higher...")
         combined_property_score_list = self.collect_all_filter_property_results_scores()
 
@@ -272,3 +291,6 @@ class TripPlanner(Base):
         if len(less_than_9_properties_list) > 0:
             properties_with_lower_score = ",".join([f"'{name}' ({score})" for name, score in less_than_9_properties_list])
             raise AssertionError(f"Expected all filtered properties to score '9' or more but these properties didn't: {properties_with_lower_score}")
+            return properties_with_lower_score
+        else:
+            return False
