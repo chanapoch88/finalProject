@@ -20,8 +20,7 @@ For my project, I developed a web-based automation testing framework using **Pyt
 - Python 3.13.3  
 - Selenium  
 - Pytest  
-- Allure (for reporting)   
-- Requests
+- Allure (for reporting)
 
 ---
 
